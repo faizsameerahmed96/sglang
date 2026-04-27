@@ -33,5 +33,8 @@ COPY python/sglang/srt/server_args.py \
 COPY python/sglang/srt/managers/scheduler_metrics_mixin.py \
      /workspace/sglang/python/sglang/srt/managers/scheduler_metrics_mixin.py
 
+COPY python/sglang/srt/managers/tokenizer_manager.py \
+     /workspace/sglang/python/sglang/srt/managers/tokenizer_manager.py
+
 LABEL org.opencontainers.image.description="lmsysorg/sglang:deepseek-v4-b300 + PR #23776 swiglu_limit clamp + self-closing tool-call tag support + extra-metric-labels"
 LABEL org.opencontainers.image.source="https://github.com/sgl-project/sglang/pull/23776"
