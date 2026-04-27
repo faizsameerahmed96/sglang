@@ -367,6 +367,7 @@ class ServerArgs:
     crash_dump_folder: Optional[str] = None
     show_time_cost: bool = False
     enable_metrics: bool = False
+    extra_metric_labels: Optional[Dict[str, str]] = None
     enable_metrics_for_all_schedulers: bool = False
     tokenizer_metrics_custom_labels_header: str = "x-custom-labels"
     tokenizer_metrics_allowed_custom_labels: Optional[List[str]] = None
@@ -3301,6 +3302,13 @@ class ServerArgs:
             "--enable-metrics",
             action="store_true",
             help="Enable log prometheus metrics.",
+        )
+        parser.add_argument(
+            "--extra-metric-labels",
+            type=json.loads,
+            default=ServerArgs.extra_metric_labels,
+            help='Extra static labels to attach to scheduler Prometheus metrics, '
+            'specified as a JSON object, e.g. \'{"deployment": "my-deploy"}\'.',
         )
         parser.add_argument(
             "--enable-metrics-for-all-schedulers",
