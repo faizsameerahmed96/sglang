@@ -1,12 +1,14 @@
 # Patched DeepSeek-V4 B300 image
 #
-# Layers two local fixes on top of lmsysorg/sglang:deepseek-v4-b300:
+# Layers three local fixes on top of lmsysorg/sglang:deepseek-v4-b300:
 #
 #   1. swiglu_limit clamp on DeepseekV2MLP shared-expert / dense-MLP path
 #      (PR #23776, https://github.com/sgl-project/sglang/pull/23776) -- fixes
 #      the V4-Pro digit-injection bug tracked in #23752.
 #   2. Self-closing tool-call tag support in the deepseekv32 function-call
 #      detector.
+#   3. --extra-metric-labels server arg + scheduler metrics mixin support for
+#      attaching static labels (e.g. deployment id) to Prometheus metrics.
 #
 # The base image already ships /workspace/sglang as an editable install
 # (see docker/deepseek_v4_b300.Dockerfile), so overwriting the .py files is
@@ -25,5 +27,11 @@ COPY python/sglang/srt/models/deepseek_v2.py \
 COPY python/sglang/srt/function_call/deepseekv32_detector.py \
      /workspace/sglang/python/sglang/srt/function_call/deepseekv32_detector.py
 
-LABEL org.opencontainers.image.description="lmsysorg/sglang:deepseek-v4-b300 + PR #23776 swiglu_limit clamp + self-closing tool-call tag support"
+COPY python/sglang/srt/server_args.py \
+     /workspace/sglang/python/sglang/srt/server_args.py
+
+COPY python/sglang/srt/managers/scheduler_metrics_mixin.py \
+     /workspace/sglang/python/sglang/srt/managers/scheduler_metrics_mixin.py
+
+LABEL org.opencontainers.image.description="lmsysorg/sglang:deepseek-v4-b300 + PR #23776 swiglu_limit clamp + self-closing tool-call tag support + extra-metric-labels"
 LABEL org.opencontainers.image.source="https://github.com/sgl-project/sglang/pull/23776"
