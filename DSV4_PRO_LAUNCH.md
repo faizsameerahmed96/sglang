@@ -16,6 +16,8 @@ sglang serve \
   --chunked-prefill-size 4096 \
   --disable-flashinfer-autotune \
   --mem-fraction-static 0.82 \
+  --tool-call-parser deepseekv4 \
+  --reasoning-parser deepseek-v4 \
   --host 127.0.0.1 \
   --port 30000
 ```
