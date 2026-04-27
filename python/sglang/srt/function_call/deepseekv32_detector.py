@@ -82,7 +82,12 @@ class DeepSeekV32Detector(BaseFormatDetector):
             r"<｜DSML｜function_calls>(.*?)</｜DSML｜function_calls>"
         )
         self.invoke_regex = (
-            r'<｜DSML｜invoke\s+name="([^"]+)"\s*>(.*?)(</｜DSML｜invoke>|$)'
+            r'<｜DSML｜invoke\s+name="([^"]+)"\s*'
+            # Either a self-closing tag (no parameters, no body) ...
+            r'(?:/\s*>'
+            # ... or a normal opening tag followed by body and a closing tag
+            # (or end-of-string for the streaming partial case).
+            r'|>(.*?)(</｜DSML｜invoke>|$))'
         )
         self.prefix_parameter_end_call = ["</", "｜DSML｜", "parameter"]
         self.current_tool_id = -1
@@ -254,9 +259,14 @@ class DeepSeekV32Detector(BaseFormatDetector):
                     break
 
                 func_name = invoke_match.group(1).strip()
-                invoke_content = invoke_match.group(2)
-                # group(3) is either "</｜DSML｜invoke>" (complete) or "" (incomplete, matched with $)
-                is_tool_end = bool(invoke_match.group(3))
+                # invoke_content is None for the self-closing form (no body).
+                invoke_content = invoke_match.group(2) or ""
+                # group(3) is "</｜DSML｜invoke>" (complete), "" (incomplete, matched with $),
+                # or None for the self-closing form, which is also a complete invoke.
+                is_tool_end = (
+                    bool(invoke_match.group(3))
+                    or invoke_match.group(0).rstrip().endswith("/>")
+                )
 
                 # Initialize state if this is the first tool call
                 if self.current_tool_id == -1:
